@@ -1,18 +1,4 @@
 {
-  "env": {
-    "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "@google_client_id",
-    "NEXT_PUBLIC_GOOGLE_CLIENT_SECRET": "@google_client_secret",
-    "NEXT_PUBLIC_GOOGLE_REDIRECT_URI": "@google_redirect_uri",
-    "NEXT_PUBLIC_APP_URL": "@app_url",
-    "NEXT_PUBLIC_ARKIV_PRIVATE_KEY": "@arkiv_private_key",
-    "NEXT_PUBLIC_ARKIV_ADDRESS": "@arkiv_address",
-    "NEXT_PUBLIC_ARKIV_CHAIN_ID": "@arkiv_chain_id",
-    "NEXT_PUBLIC_ARKIV_RPC_URL": "@arkiv_rpc_url",
-    "NEXT_PUBLIC_ARKIV_WS_URL": "@arkiv_ws_url",
-    "NEXT_PUBLIC_ARKIV_EXPLORER_URL": "@arkiv_explorer_url",
-    "NEXT_PUBLIC_DEFAULT_ENCRYPTION_PASSWORD": "@encryption_password",
-    "OPENAI_API_KEY": "@openai_api_key"
-  },
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
