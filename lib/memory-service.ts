@@ -522,34 +522,58 @@ export class MemoryService {
   }
 
   /**
-   * Delete a memory
+   * Delete a memory by ID or directly by entity key
    */
-  async deleteMemory(memoryId: string): Promise<boolean> {
+  async deleteMemory(memoryIdOrEntityKey: string): Promise<boolean> {
     try {
-      // Find the memory first
-      const memories = await this.searchMemoriesDirect({ query: memoryId, type: undefined });
-      const memory = memories.find(m => m.id === memoryId);
+      console.log(`🗑️ [MemoryService] Attempting to delete: ${memoryIdOrEntityKey}`)
+      
+      // Check if it's already an entity key (starts with 0x and is 66 chars)
+      const isEntityKey = memoryIdOrEntityKey.startsWith('0x') && memoryIdOrEntityKey.length === 66;
+      
+      if (isEntityKey) {
+        console.log(`🗑️ [MemoryService] Deleting by entity key directly`)
+        const success = await this.golemStorage.deleteMemory(memoryIdOrEntityKey);
+        
+        if (success) {
+          console.log(`✅ [MemoryService] Memory deleted successfully via entity key`);
+          const explorerUrl =
+            process.env.NEXT_PUBLIC_ARKIV_EXPLORER_URL ||
+            process.env.NEXT_PUBLIC_GOLEM_EXPLORER_URL ||
+            DEFAULT_ARKIV_EXPLORER_URL;
+          console.log(`🔗 Entity URL: ${explorerUrl}/entity/${memoryIdOrEntityKey}`);
+        }
+        
+        return success;
+      }
+      
+      // Otherwise, search for the memory by ID
+      console.log(`🔍 [MemoryService] Searching for memory by ID: ${memoryIdOrEntityKey}`)
+      const memories = await this.searchMemoriesDirect({ query: memoryIdOrEntityKey, type: undefined });
+      const memory = memories.find(m => m.id === memoryIdOrEntityKey);
       
       if (!memory) {
-        console.log(`Memory not found for deletion: ${memoryId}`);
+        console.error(`❌ [MemoryService] Memory not found for deletion: ${memoryIdOrEntityKey}`);
+        console.log(`📊 [MemoryService] Searched memories:`, memories.length);
         return false;
       }
 
+      console.log(`🗑️ [MemoryService] Found memory, deleting with entity key: ${memory.ipfsHash}`)
       // Delete from Arkiv DB using the entity key
       const success = await this.golemStorage.deleteMemory(memory.ipfsHash!);
       
       if (success) {
-        console.log(`Memory deleted successfully: ${memoryId}`);
+        console.log(`✅ [MemoryService] Memory deleted successfully: ${memoryIdOrEntityKey}`);
         const explorerUrl =
           process.env.NEXT_PUBLIC_ARKIV_EXPLORER_URL ||
           process.env.NEXT_PUBLIC_GOLEM_EXPLORER_URL ||
           DEFAULT_ARKIV_EXPLORER_URL;
-        console.log(`🔗 Transaction URL: ${explorerUrl}/entity/${memory.ipfsHash}`);
+        console.log(`🔗 Entity URL: ${explorerUrl}/entity/${memory.ipfsHash}`);
       }
 
       return success;
     } catch (error) {
-      console.error('Failed to delete memory:', error);
+      console.error('❌ [MemoryService] Failed to delete memory:', error);
       return false;
     }
   }

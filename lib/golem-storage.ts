@@ -32,6 +32,8 @@ export class ArkivStorageService {
   private explorerUrl: string
   private entityKeys: Set<string> = new Set()
   private defaultExpirationSeconds: number
+  private individualFetchFailures = 0 // Track consecutive failures
+  private skipIndividualFetch = false // Skip individual fetches if consistently failing
 
   constructor(config: ArkivConfig) {
     this.config = config
@@ -109,42 +111,42 @@ export class ArkivStorageService {
   }
 
   private async entityToMemory(entity: Entity): Promise<MemoryEntry | null> {
-    // If entity doesn't have value, fetch it individually to get the payload
+    // If entity doesn't have value, try to fetch it individually (unless we've determined it's not working)
     if (!entity?.value) {
-      console.log('🔄 [Arkiv] Entity missing value, fetching individually:', entity.key)
-      console.log('🔍 [Arkiv] Entity object keys:', Object.keys(entity))
-      console.log('🔍 [Arkiv] Entity properties:', {
-        key: entity.key,
-        hasValue: !!entity.value,
-        hasToText: typeof (entity as any).toText === 'function',
-        hasToJson: typeof (entity as any).toJson === 'function',
-        hasPayload: !!(entity as any).payload,
-        hasData: !!(entity as any).data,
-      })
+      // Skip individual fetching if it's been consistently failing (performance optimization)
+      if (this.skipIndividualFetch) {
+        return null
+      }
+      
+      // Only log details for the first few failures
+      if (this.individualFetchFailures < 3) {
+        console.log('🔄 [Arkiv] Entity missing value, fetching individually:', entity.key)
+        console.log('🔍 [Arkiv] Entity properties:', {
+          key: entity.key,
+          hasValue: !!entity.value,
+          hasToText: typeof (entity as any).toText === 'function',
+          hasToJson: typeof (entity as any).toJson === 'function',
+        })
+      }
       
       try {
         const fullEntity = await this.publicClient.getEntity(entity.key as Hex)
-        console.log('🔍 [Arkiv] Full entity keys:', Object.keys(fullEntity))
-        console.log('🔍 [Arkiv] Full entity properties:', {
-          key: fullEntity.key,
-          hasValue: !!fullEntity.value,
-          hasToText: typeof (fullEntity as any).toText === 'function',
-          hasToJson: typeof (fullEntity as any).toJson === 'function',
-          hasPayload: !!(fullEntity as any).payload,
-          hasData: !!(fullEntity as any).data,
-        })
         
         if (!fullEntity?.value) {
-          console.warn('⚠️ [Arkiv] Entity still has no value after individual fetch:', entity.key)
-          console.warn('⚠️ [Arkiv] Trying alternative methods...')
+          this.individualFetchFailures++
           
-          // Try toText() method
+          // After 5 failures, skip individual fetching for performance
+          if (this.individualFetchFailures >= 5) {
+            console.warn('⚠️ [Arkiv] Individual entity fetching consistently failing. Skipping for performance.')
+            this.skipIndividualFetch = true
+          }
+          
+          // Try toText() method as alternative
           if (typeof (fullEntity as any).toText === 'function') {
             try {
               const text = (fullEntity as any).toText()
-              console.log('✅ [Arkiv] Got text from toText():', text?.substring(0, 100))
               if (text) {
-                // Parse and return
+                this.individualFetchFailures = 0 // Reset on success
                 const data = JSON.parse(text)
                 return {
                   id: data.id,
@@ -163,16 +165,21 @@ export class ArkivStorageService {
                 }
               }
             } catch (e: any) {
-              console.error('❌ [Arkiv] toText() failed:', e.message)
+              // Silently fail
             }
           }
           
           return null
         }
-        // Use the full entity with payload
+        
+        // Success! Reset failure counter
+        this.individualFetchFailures = 0
         entity = fullEntity
       } catch (error: any) {
-        console.warn('⚠️ [Arkiv] Failed to fetch entity individually:', entity.key, error.message)
+        this.individualFetchFailures++
+        if (this.individualFetchFailures >= 5) {
+          this.skipIndividualFetch = true
+        }
         return null
       }
     }
@@ -313,12 +320,22 @@ export class ArkivStorageService {
   async deleteMemory(entityKey: string): Promise<boolean> {
     await this.ensureInitialized()
     try {
+      console.log(`🗑️ [Arkiv] Deleting entity: ${entityKey}`)
       await this.walletClient.deleteEntity({ entityKey: entityKey as Hex })
+      console.log(`✅ [Arkiv] Entity deleted from blockchain`)
+      
       this.entityKeys.delete(entityKey)
       this.saveEntityKeysToStorage()
+      console.log(`✅ [Arkiv] Entity key removed from local cache`)
+      
       return true
-    } catch (error) {
-      console.error('Failed to delete Arkiv entity', error)
+    } catch (error: any) {
+      console.error('❌ [Arkiv] Failed to delete entity:', error)
+      console.error('❌ [Arkiv] Error details:', {
+        message: error.message,
+        entityKey,
+        ownerAddress: this.ownerAddress
+      })
       return false
     }
   }
@@ -332,12 +349,6 @@ export class ArkivStorageService {
     }
     
     const limit = options.limit || 50
-    console.log('🔍 [Arkiv] Fetching owned entities...', {
-      ownerAddress: this.ownerAddress,
-      limit,
-      includePayload: options.includePayload,
-      fetchAll: options.fetchAll
-    })
     
     try {
       const query = this.publicClient
@@ -348,23 +359,16 @@ export class ArkivStorageService {
         .limit(limit)
 
       const result = await query.fetch()
-      console.log('🔍 [Arkiv] Query result:', {
-        entitiesCount: result.entities.length,
-        hasNextPage: result.hasNextPage()
-      })
-      
       const entities: Entity[] = [...result.entities]
       
       if (options.fetchAll && result.hasNextPage()) {
-        console.log('🔍 [Arkiv] Fetching additional pages...')
         while (result.hasNextPage()) {
           await result.next()
           entities.push(...result.entities)
-          console.log('🔍 [Arkiv] Total entities so far:', entities.length)
         }
       }
       
-      console.log('✅ [Arkiv] Total entities fetched:', entities.length)
+      console.log('✅ [Arkiv] Fetched', entities.length, 'entities')
       return entities
     } catch (error: any) {
       console.error('❌ [Arkiv] fetchOwnedEntities error:', error)
@@ -381,21 +385,12 @@ export class ArkivStorageService {
     await this.ensureInitialized()
     
     try {
-      console.log('🔍 [Arkiv] Searching memories...', {
-        searchText,
-        owner,
-        limit,
-        ownerAddress: this.ownerAddress
-      })
-      
       const entities = await this.fetchOwnedEntities({ includePayload: true, limit: Math.max(limit, 50), fetchAll: false })
-      console.log('🔍 [Arkiv] Fetched entities:', entities.length)
       
       const memoryPromises = entities.map(async (entity) => {
         try {
           return await this.entityToMemory(entity)
         } catch (error) {
-          console.warn('⚠️ [Arkiv] Failed to convert entity to memory:', entity.key, error)
           return null
         }
       })
@@ -403,7 +398,7 @@ export class ArkivStorageService {
       const memoryResults = await Promise.all(memoryPromises)
       const memories = memoryResults.filter(Boolean) as MemoryEntry[]
       
-      console.log('🔍 [Arkiv] Converted to memories:', memories.length)
+      console.log('🔍 [Arkiv] Converted', memories.length, 'of', entities.length, 'entities to memories')
 
       const filtered = memories.filter(memory => {
         if (!searchText) return true
@@ -420,8 +415,8 @@ export class ArkivStorageService {
       const result = filtered.slice(0, limit)
       console.log('🔍 [Arkiv] Final result:', result.length, 'memories')
       
-      // If no results from query, try fallback method using getAllEntityKeys
-      if (result.length === 0) {
+      // Skip fallback if individual fetching is already known to fail (performance optimization)
+      if (result.length === 0 && !this.skipIndividualFetch) {
         console.log('⚠️ [Arkiv] No results from query, trying fallback method...')
         try {
           const fallbackMemories = await this.searchMemoriesFallback(searchText, limit)

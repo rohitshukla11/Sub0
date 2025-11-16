@@ -116,8 +116,7 @@ export default function Home() {
         return
       }
       
-      // Wait a bit to ensure Arkiv is ready
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Removed artificial delay for faster loading
       
       const searchResult = await memoryService.searchMemories({
         query: '',
@@ -412,7 +411,13 @@ export default function Home() {
   const handleDeleteMemory = async (id: string) => {
     try {
       console.log('🗑️ Deleting memory:', id)
-      await memoryService.deleteMemory(id)
+      
+      // Try to find the memory in our local state to get its entity key
+      const memory = memories.find(m => m.id === id);
+      const idToDelete = memory?.ipfsHash || id; // Use entity key if available, otherwise ID
+      
+      console.log('🗑️ Deleting with:', idToDelete)
+      await memoryService.deleteMemory(idToDelete)
       console.log('✅ Memory deleted, reloading...')
       
       // Reload after a short delay to ensure Arkiv has processed the deletion
