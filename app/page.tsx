@@ -44,20 +44,43 @@ export default function Home() {
     const initializeApp = async () => {
       try {
         console.log('🚀 Initializing app...')
-        await memoryService.initialize()
-        await chatService.initialize()
-        console.log('✅ Services initialized')
         
-        await loadStats()
-        await loadMemories()
-        await loadChatHistory()
+        // Initialize services
+        try {
+          await memoryService.initialize()
+          console.log('✅ Memory service initialized')
+        } catch (memoryError: any) {
+          console.error('❌ Memory service initialization failed:', memoryError)
+          console.error('Error details:', {
+            message: memoryError.message,
+            stack: memoryError.stack
+          })
+        }
         
-        // Debug chat persistence
-        await chatService.debugChatPersistence()
+        try {
+          await chatService.initialize()
+          console.log('✅ Chat service initialized')
+        } catch (chatError) {
+          console.error('❌ Chat service initialization failed:', chatError)
+        }
+        
+        // Load data after initialization
+        console.log('📊 Loading app data...')
+        await Promise.all([
+          loadStats(),
+          loadMemories(),
+          loadChatHistory()
+        ])
+        
+        console.log('✅ App initialization complete')
       } catch (error) {
-        console.error('Failed to initialize app:', error)
+        console.error('❌ Failed to initialize app:', error)
         // Still try to load chat history even if initialization fails
-        await loadChatHistory()
+        try {
+          await loadChatHistory()
+        } catch (chatError) {
+          console.error('Failed to load chat history:', chatError)
+        }
       }
     }
     
@@ -86,40 +109,41 @@ export default function Home() {
   const loadMemories = async () => {
     try {
       console.log('🧠 Starting to load memories...')
+      
+      // Ensure memory service is initialized
+      if (!memoryService) {
+        console.error('❌ Memory service not available')
+        return
+      }
+      
+      // Wait a bit to ensure Arkiv is ready
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
       const searchResult = await memoryService.searchMemories({
         query: '',
-        limit: 20
+        limit: 50 // Increased limit to get more memories
       })
+      
       console.log('🧠 Loaded memories:', searchResult.memories.length, 'memories')
       console.log('🧠 Memory data:', searchResult.memories)
-      setMemories(searchResult.memories)
       
-      // If no memories found, create a test memory
-      if (searchResult.memories.length === 0) {
-        console.log('🧠 No memories found, creating a test memory...')
-        try {
-          const testMemory = await memoryService.createMemory({
-            content: 'This is a test memory to verify the system is working',
-            type: 'learned_fact',
-            category: 'test',
-            tags: ['test', 'system'],
-            encrypted: false
-          })
-          console.log('🧠 Test memory created:', testMemory)
-          
-          // Reload memories after creating test memory
-          const newSearchResult = await memoryService.searchMemories({
-            query: '',
-            limit: 20
-          })
-          console.log('🧠 Reloaded memories after test creation:', newSearchResult.memories.length, 'memories')
-          setMemories(newSearchResult.memories)
-        } catch (testError) {
-          console.error('Failed to create test memory:', testError)
-        }
+      if (searchResult.memories.length > 0) {
+        setMemories(searchResult.memories)
+        console.log('✅ Memories loaded successfully')
+      } else {
+        console.log('⚠️ No memories found in Arkiv')
+        setMemories([])
+        
+        // Don't auto-create test memory - let user create memories through chat
+        console.log('💡 Tip: Start chatting to create memories')
       }
-    } catch (error) {
-      console.error('Failed to load memories:', error)
+    } catch (error: any) {
+      console.error('❌ Failed to load memories:', error)
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      })
       setMemories([])
     }
   }
@@ -229,9 +253,14 @@ export default function Home() {
             encrypted: true
           })
           console.log('✅ Personalized conversation stored with ID:', memory.id)
+          console.log('🔗 Entity URL:', memory.entityUrl)
+          console.log('🔗 Transaction URL:', memory.transactionUrl)
           
-          loadStats()
-          loadMemories()
+          // Reload stats and memories after a short delay to ensure Arkiv has processed
+          setTimeout(async () => {
+            await loadStats()
+            await loadMemories()
+          }, 2000)
         } catch (memoryError) {
           console.warn('Failed to store personalized conversation:', memoryError)
         }
@@ -366,26 +395,34 @@ export default function Home() {
 
   const handleSearchMemories = async (query: string) => {
     try {
+      console.log('🔍 Searching memories with query:', query)
       const searchResult = await memoryService.searchMemories({
         query,
-        type: 'conversation',
-        limit: 20
+        limit: 50 // Increased limit to show more results
+        // Removed type filter to show all memory types
       })
+      console.log('🔍 Search results:', searchResult.memories.length, 'memories found')
       setMemories(searchResult.memories)
     } catch (error) {
-      console.error('Failed to search memories:', error)
+      console.error('❌ Failed to search memories:', error)
       toast.error('Failed to search memories')
     }
   }
 
   const handleDeleteMemory = async (id: string) => {
     try {
+      console.log('🗑️ Deleting memory:', id)
       await memoryService.deleteMemory(id)
-      loadStats()
-      loadMemories()
+      console.log('✅ Memory deleted, reloading...')
+      
+      // Reload after a short delay to ensure Arkiv has processed the deletion
+      setTimeout(async () => {
+        await Promise.all([loadStats(), loadMemories()])
+      }, 1000)
+      
       toast.success('Memory deleted successfully')
     } catch (error) {
-      console.error('Failed to delete memory:', error)
+      console.error('❌ Failed to delete memory:', error)
       toast.error('Failed to delete memory')
     }
   }
@@ -428,10 +465,7 @@ export default function Home() {
   }
 
   return (
-      <div className="h-screen flex flex-col overflow-hidden" style={{
-        background: 'linear-gradient(135deg, #f3e7ff 0%, #fff5f7 25%, #ffffff 50%, #e7f3ff 75%, #f0f9ff 100%)',
-        backgroundAttachment: 'fixed'
-      }}>
+      <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
       <Header 
         showInsights={showInsights}
         onToggleInsights={(show) => {
@@ -447,24 +481,24 @@ export default function Home() {
         insights={personalizedInsights}
       />
       
-      {/* Transaction URL Display - Enhanced */}
+      {/* Transaction URL Display - Neo-Brutalism */}
       {lastTransactionUrl && (
-        <div className="neomorph-flat border-b border-white/50 px-4 py-3">
+        <div className="bg-yellow-200 border-b-4 border-gray-500 px-4 py-3">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <span className="text-sm font-bold text-[#8b5cf6]">🔗 Last Transaction:</span>
+                <span className="text-sm font-black text-gray-900">🔗 TRANSACTION:</span>
               <a 
                 href={lastTransactionUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-sm text-gray-700 hover:text-[#8b5cf6] underline truncate max-w-md font-medium transition-colors"
+                className="text-sm text-gray-900 hover:text-blue-600 underline truncate max-w-md font-bold transition-colors"
               >
                 {lastTransactionUrl}
               </a>
             </div>
             <button
               onClick={() => setLastTransactionUrl(null)}
-              className="text-gray-500 hover:text-red-500 text-sm font-bold transition-colors"
+              className="text-gray-900 hover:text-red-600 text-lg font-black transition-colors"
             >
               ✕
             </button>
@@ -473,8 +507,8 @@ export default function Home() {
       )}
       
       <main className="flex-1 flex w-full overflow-hidden relative">
-        {/* Left Sidebar - Calendar - Enhanced */}
-        <div className="w-64 border-r border-white/50 neomorph-flat overflow-hidden">
+        {/* Left Sidebar - Calendar - Neo-Brutalism */}
+        <div className="w-64 border-r-4 border-gray-500 bg-white overflow-hidden">
           <CalendarInterface
             onEventCreate={(event) => {
               console.log('Event created:', event);
@@ -503,12 +537,13 @@ export default function Home() {
           />
         </div>
 
-        {/* Right Sidebar - Memories - Enhanced */}
-        <div className="w-64 border-l border-white/50 neomorph-flat overflow-hidden">
+        {/* Right Sidebar - Memories - Neo-Brutalism */}
+        <div className="w-64 border-l-4 border-gray-500 bg-white overflow-hidden">
           <MemoryManagement
             memories={memories}
             onSearchMemories={handleSearchMemories}
             onDeleteMemory={handleDeleteMemory}
+            onRefresh={loadMemories}
             totalMemories={memories.length}
             memoryTypes={new Set(memories.map(m => m.type)).size}
             onGrantPermission={handleGrantPermission}
@@ -517,10 +552,10 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Profile Management Modal - Enhanced */}
-      {showProfileManagement && (
-        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="neomorph rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        {/* Profile Management Modal - Neo-Brutalism */}
+        {showProfileManagement && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white border-4 border-gray-500 shadow-[8px_8px_0px_0px_rgba(107,114,128,1)] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
             <ProfileManagement
               profile={userProfile}
               onUpdateProfile={handleUpdateProfile}

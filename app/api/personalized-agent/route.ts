@@ -41,7 +41,9 @@ export async function POST(request: NextRequest) {
       content: response.content,
       shouldStore: response.shouldStore,
       insights,
-      golemExplorerUrl: response.golemExplorerUrl
+      golemExplorerUrl: response.golemExplorerUrl, // Legacy field for backward compatibility
+      entityUrl: response.entityUrl,
+      transactionUrl: response.transactionUrl
     });
 
   } catch (error: any) {

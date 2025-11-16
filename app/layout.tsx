@@ -7,8 +7,8 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'BetterHalf.ai - Your AI Companion for Life',
-  description: 'Your personalized AI companion that understands your schedule, preferences, and lifestyle to provide tailored recommendations and support.',
+  title: 'Amigo.ai - Your AI Friend',
+  description: 'Your friendly AI companion that helps you manage your schedule, stay productive, and make life easier every day.',
 }
 
 export default function RootLayout({
@@ -29,11 +29,11 @@ export default function RootLayout({
               toastOptions={{
                 duration: 3000,
                 style: {
-                  background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                  background: 'linear-gradient(135deg, #3b82f6, #10b981)',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '16px',
-                  boxShadow: '8px 8px 16px rgba(139, 92, 246, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.9), 0 0 20px rgba(236, 72, 153, 0.15)',
+                  boxShadow: '8px 8px 16px rgba(59, 130, 246, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.9), 0 0 20px rgba(16, 185, 129, 0.15)',
                   fontSize: '13px',
                   fontWeight: '600',
                   padding: '12px 18px',
