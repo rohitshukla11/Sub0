@@ -12,6 +12,8 @@ interface ChatMessage {
   memoryId?: string
   insights?: PersonalInsights
   golemExplorerUrl?: string
+  entityUrl?: string
+  transactionUrl?: string
 }
 
 interface PersonalInsights {
@@ -100,29 +102,36 @@ export function PersonalizedChatInterface({
     <div className="h-full flex flex-col bg-gray-50">
       
       {/* Messages - Enhanced Neumorphism layout */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className={`${messages.length === 0 ? 'flex-1 px-4 py-4' : 'flex-1 overflow-y-auto px-4 py-4'}`}>
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 border-4 border-gray-500 bg-blue-500 shadow-[6px_6px_0px_0px_rgba(107,114,128,1)]">
-              <Users className="w-10 h-10 text-white" strokeWidth={3} />
+          <div className="relative h-[60vh] sm:h-[65vh] md:h-[70vh] w-full">
+            <div className="absolute inset-0 rounded-2xl overflow-hidden border-4 border-gray-500 shadow-[6px_6px_0px_0px_rgba(107,114,128,1)]">
+              <img 
+                src="/openart-video_5dd72afd_1763270149286-ezgif.com-video-to-webp-converter.webp" 
+                alt="Amigo Penguin"
+                className="w-full h-full object-cover"
+                style={{ display: 'block' }}
+              />
             </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-3">
-              Hey there, friend! 👋
-            </h3>
-            <p className="text-sm text-gray-600 leading-relaxed mb-6">
-              I'm Amigo, your AI companion! Let's chat, plan your day, and make life easier together.
-            </p>
+            <div className="absolute inset-0 flex flex-col items-center justify-start pt-6 text-center">
+              <h3 className="text-2xl font-black text-gray-900 drop-shadow-sm">
+                Hey there, friend! 👋
+              </h3>
+              <p className="mt-2 text-sm text-gray-700 max-w-2xl px-4">
+                I'm Amigo, your AI companion! Let's chat, plan your day, and make life easier together.
+              </p>
+            </div>
           </div>
         )}
 
-        <div className="max-w-3xl mx-auto space-y-5">
+        <div className="w-full space-y-4">
           {messages.map((message, index) => (
             <div
               key={message.id}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                  className={`max-w-[80%] rounded-xl px-5 py-4 transition-all border-3 border-gray-500 ${
+                  className={`max-w-[80%] rounded-xl px-4 py-3 transition-all border-3 border-gray-500 ${
                     message.role === 'user'
                       ? 'text-white bg-blue-500 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)]'
                       : 'text-gray-900 bg-white shadow-[4px_4px_0px_0px_rgba(107,114,128,1)]'
@@ -171,7 +180,7 @@ export function PersonalizedChatInterface({
 
           {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white rounded-xl px-5 py-4 border-3 border-gray-500 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)]">
+              <div className="bg-white rounded-xl px-4 py-3 border-3 border-gray-500 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)]">
                   <div className="flex items-center space-x-3">
                     <Loader2 className="w-5 h-5 animate-spin text-blue-600" strokeWidth={3} />
                     <span className="text-sm font-bold text-gray-900">Thinking...</span>
@@ -185,11 +194,11 @@ export function PersonalizedChatInterface({
       </div>
 
       {/* Input Area - Neo-Brutalism */}
-      <div className="border-t-4 border-gray-500 bg-white px-6 py-5">
-        <div className="max-w-3xl mx-auto">
+      <div className="border-t-4 border-b-4 border-gray-500 bg-white px-4 py-3">
+        <div className="w-full">
           {/* Quick prompts - Enhanced */}
           {messages.length === 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-3">
               {quickPrompts.map((prompt, index) => (
                 <button
                   key={index}
@@ -202,7 +211,7 @@ export function PersonalizedChatInterface({
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex items-end space-x-3">
+          <form onSubmit={handleSubmit} className="flex items-end space-x-3 w-full">
             <textarea
               ref={inputRef}
               value={inputValue}
@@ -214,13 +223,13 @@ export function PersonalizedChatInterface({
                 }
               }}
                 placeholder="Message Amigo..."
-              className="flex-1 px-5 py-4 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none resize-none transition-all border-3 border-gray-500 bg-white font-medium"
+              className="flex-1 px-4 py-3 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none resize-none transition-all border-3 border-gray-500 bg-white font-medium"
               rows={1}
               disabled={isLoading}
             />
               <button
                 type="submit"
-                className="p-4 rounded-xl text-white transition-all disabled:opacity-50 border-3 border-gray-500 bg-blue-500 hover:bg-blue-600 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)] hover:shadow-[6px_6px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(107,114,128,1)]"
+                className="p-3.5 rounded-xl text-white transition-all disabled:opacity-50 border-3 border-gray-500 bg-blue-500 hover:bg-blue-600 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)] hover:shadow-[6px_6px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(107,114,128,1)]"
                 disabled={!inputValue.trim() || isLoading}
               >
               {isLoading ? (

@@ -513,7 +513,7 @@ export default function Home() {
       
       <main className="flex-1 flex w-full overflow-hidden relative">
         {/* Left Sidebar - Calendar - Neo-Brutalism */}
-        <div className="w-64 border-r-4 border-gray-500 bg-white overflow-hidden">
+        <div className="w-72 border-r-4 border-gray-500 bg-white overflow-hidden">
           <CalendarInterface
             onEventCreate={(event) => {
               console.log('Event created:', event);
@@ -543,7 +543,7 @@ export default function Home() {
         </div>
 
         {/* Right Sidebar - Memories - Neo-Brutalism */}
-        <div className="w-64 border-l-4 border-gray-500 bg-white overflow-hidden">
+        <div className="w-72 border-l-4 border-gray-500 bg-white overflow-hidden">
           <MemoryManagement
             memories={memories}
             onSearchMemories={handleSearchMemories}

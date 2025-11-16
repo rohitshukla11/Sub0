@@ -11,26 +11,26 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 14px;
     font-weight: 500;
-    background: #f5f5f5;
+    background: #eaf6ff; /* icy sky */
   }
   
   /* Neo-Brutalism styles */
   .neomorph {
     background: #ffffff;
-    border: 3px solid #6b7280;
-    box-shadow: 4px 4px 0px #6b7280;
+    border: 3px solid #475569; /* slate-600 */
+    box-shadow: 4px 4px 0px #475569;
   }
   
   .neomorph-inset {
     background: #f8f9fa;
-    border: 3px solid #6b7280;
+    border: 3px solid #475569;
     box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1);
   }
   
   .neomorph-flat {
     background: #ffffff;
-    border: 3px solid #6b7280;
-    box-shadow: 3px 3px 0px #6b7280;
+    border: 3px solid #475569;
+    box-shadow: 3px 3px 0px #475569;
   }
   
   .neomorph-hover {
@@ -49,36 +49,36 @@
   
   /* Neo-Brutalism colors */
   .argentina-gradient {
-    background: #3b82f6;
+    background: #60a5fa; /* light icy blue */
   }
   
   .argentina-gradient-soft {
-    background: #fafafa;
+    background: #eaf6ff; /* ice */
   }
   
   .argentina-blue {
-    background: #3b82f6;
-  }
-  
-  .argentina-blue-light {
     background: #60a5fa;
   }
   
+  .argentina-blue-light {
+    background: #93c5fd;
+  }
+  
   .argentina-blue-pale {
-    background-color: #dbeafe;
+    background-color: #e0f2fe;
   }
   
   /* Neo-Brutalism borders */
   .brutalist-border {
-    border: 3px solid #6b7280;
+    border: 3px solid #475569;
   }
   
   .brutalist-shadow {
-    box-shadow: 4px 4px 0px #6b7280;
+    box-shadow: 3px 3px 0px #475569;
   }
   
   .brutalist-shadow-lg {
-    box-shadow: 6px 6px 0px #6b7280;
+    box-shadow: 5px 5px 0px #475569;
   }
 }
 
@@ -89,58 +89,58 @@
   
   .btn-primary {
     @apply btn text-white font-bold;
-    background: #3b82f6;
-    border: 3px solid #6b7280;
-    box-shadow: 4px 4px 0px #6b7280;
+    background: #60a5fa;
+    border: 3px solid #475569;
+    box-shadow: 4px 4px 0px #475569;
     transition: all 0.15s ease;
   }
   
   .btn-primary:hover {
-    background: #2563eb;
+    background: #3b82f6;
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px #6b7280;
+    box-shadow: 6px 6px 0px #475569;
   }
   
   .btn-primary:active {
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px #6b7280;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .btn-secondary {
     @apply btn bg-white text-gray-900 font-bold;
-    border: 3px solid #6b7280;
-    box-shadow: 4px 4px 0px #6b7280;
+    border: 3px solid #475569;
+    box-shadow: 4px 4px 0px #475569;
     transition: all 0.15s ease;
   }
   
   .btn-secondary:hover {
     background: #f3f4f6;
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px #6b7280;
+    box-shadow: 6px 6px 0px #475569;
   }
   
   .btn-secondary:active {
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px #6b7280;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .btn-outline {
     @apply btn bg-white font-bold;
-    border: 3px solid #3b82f6;
-    color: #3b82f6;
-    box-shadow: 4px 4px 0px #6b7280;
+    border: 3px solid #60a5fa;
+    color: #0ea5e9;
+    box-shadow: 4px 4px 0px #475569;
     transition: all 0.15s ease;
   }
   
   .btn-outline:hover {
     background: #dbeafe;
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px #6b7280;
+    box-shadow: 6px 6px 0px #475569;
   }
   
   .btn-outline:active {
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px #6b7280;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .btn-sm {
@@ -148,28 +148,28 @@
   }
   
   .btn-md {
-    @apply h-10 px-4 py-2;
+    @apply h-9 px-3.5 py-1.5;
   }
   
   .btn-lg {
-    @apply h-12 px-8 text-base;
+    @apply h-11 px-6 text-base;
   }
   
   .card {
     @apply rounded-lg bg-white;
-    border: 3px solid #6b7280;
-    box-shadow: 4px 4px 0px #6b7280;
+    border: 3px solid #475569;
+    box-shadow: 4px 4px 0px #475569;
     transition: all 0.15s ease;
   }
   
   .card:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px #6b7280;
+    box-shadow: 6px 6px 0px #475569;
   }
   
   .input {
-    @apply flex h-10 w-full rounded-lg bg-white px-4 py-2 text-sm placeholder:text-gray-400 font-medium;
-    border: 3px solid #6b7280;
+    @apply flex h-9 w-full rounded-lg bg-white px-3.5 py-2 text-sm placeholder:text-gray-400 font-medium;
+    border: 3px solid #475569;
     box-shadow: none;
     transition: all 0.15s ease;
   }
@@ -181,8 +181,8 @@
   }
   
   .textarea {
-    @apply flex min-h-[80px] w-full rounded-lg bg-white px-4 py-3 text-sm placeholder:text-gray-400 font-medium;
-    border: 3px solid #6b7280;
+    @apply flex min-h-[72px] w-full rounded-lg bg-white px-3.5 py-2.5 text-sm placeholder:text-gray-400 font-medium;
+    border: 3px solid #475569;
     box-shadow: none;
     transition: all 0.15s ease;
   }
@@ -195,37 +195,37 @@
   
   .badge {
     @apply inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold;
-    border: 2px solid #6b7280;
+    border: 2px solid #475569;
   }
   
   .badge-primary {
     @apply badge text-white;
-    background: #3b82f6;
-    box-shadow: 2px 2px 0px #6b7280;
+    background: #60a5fa;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .badge-secondary {
     @apply badge bg-white;
-    color: #3b82f6;
-    box-shadow: 2px 2px 0px #6b7280;
+    color: #0ea5e9;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .badge-success {
     @apply badge text-white;
     background: #10b981;
-    box-shadow: 2px 2px 0px #6b7280;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .badge-warning {
     @apply badge text-white;
     background: #f59e0b;
-    box-shadow: 2px 2px 0px #6b7280;
+    box-shadow: 2px 2px 0px #475569;
   }
   
   .badge-error {
     @apply badge text-white;
     background: #ef4444;
-    box-shadow: 2px 2px 0px #6b7280;
+    box-shadow: 2px 2px 0px #475569;
   }
 
   .line-clamp-2 {
