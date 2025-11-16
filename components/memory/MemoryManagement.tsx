@@ -108,7 +108,7 @@ export function MemoryManagement({
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-1.5">
               <Database className="w-3.5 h-3.5 text-[#3b82f6]" strokeWidth={2.5} />
-              <span className="text-[10px] font-bold text-gray-800">{totalMemories} Memories</span>
+              <span className="text-xs font-bold text-gray-800">{totalMemories} Memories</span>
             </div>
             <div className="flex items-center space-x-1.5">
               {onRefresh && (
@@ -143,14 +143,14 @@ export function MemoryManagement({
         </div>
         
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" strokeWidth={2.5} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" strokeWidth={2.5} />
           <form onSubmit={handleSearch}>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-full pl-8 pr-3 py-2 rounded-lg text-[10px] placeholder-gray-500 focus:outline-none transition-all border-2 border-gray-500 bg-white font-medium"
+              className="w-full pl-8 pr-3 py-2 rounded-lg text-xs placeholder-gray-500 focus:outline-none transition-all border-2 border-gray-500 bg-white font-medium"
             />
           </form>
         </div>
@@ -163,8 +163,8 @@ export function MemoryManagement({
             <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 border-3 border-gray-500 bg-blue-500 shadow-[3px_3px_0px_0px_rgba(107,114,128,1)]">
               <Database className="w-6 h-6 text-white" strokeWidth={3} />
             </div>
-            <p className="text-[10px] text-gray-500 font-semibold">No memories yet</p>
-            <p className="text-[9px] text-gray-400 mt-0.5">Start chatting to create</p>
+            <p className="text-xs text-gray-500 font-semibold">No memories yet</p>
+            <p className="text-[11px] text-gray-400 mt-0.5">Start chatting to create</p>
           </div>
         ) : (
           <div className="space-y-1.5">
@@ -176,7 +176,7 @@ export function MemoryManagement({
                 <div className="flex items-start justify-between gap-1.5">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                      <span className={`text-[11px] px-1.5 py-0.5 rounded font-bold ${
                         memory.type === 'learned_fact' 
                           ? 'badge-success' 
                           : memory.type === 'user_preference'
@@ -186,7 +186,7 @@ export function MemoryManagement({
                         {memory.type.replace('_', ' ')}
                       </span>
                     </div>
-                    <p className="text-[10px] text-gray-700 leading-snug font-medium line-clamp-2">
+                    <p className="text-xs text-gray-700 leading-snug font-medium line-clamp-2">
                       {showDecrypted && memory.encrypted && decryptedMemories.has(memory.id) 
                         ? truncateContent(decryptedMemories.get(memory.id) || memory.content)
                         : truncateContent(memory.content)
@@ -199,7 +199,7 @@ export function MemoryManagement({
                               href={memory.entityUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white transition-all"
+                              className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white transition-all"
                             >
                               Entity
                             </a>
@@ -209,7 +209,7 @@ export function MemoryManagement({
                               href={memory.transactionUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white transition-all"
+                              className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-[#eff6ff] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white transition-all"
                             >
                               TX
                             </a>

@@ -205,10 +205,10 @@ export default function CalendarInterface({
               <ChevronLeft className="w-3 h-3" strokeWidth={3} />
             </button>
           <div className="text-center">
-            <div className="text-xs font-black text-gray-900">
+            <div className="text-sm font-black text-gray-900">
               {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </div>
-            <div className="text-[10px] text-gray-600 font-bold">
+            <div className="text-xs text-gray-600 font-bold">
               {selectedDate.toLocaleDateString('en-US', { weekday: 'short' })}
             </div>
           </div>
@@ -221,7 +221,7 @@ export default function CalendarInterface({
         </div>
         <button
           onClick={() => navigateDate('today')}
-          className="w-full text-[10px] font-black text-blue-600 rounded-lg py-1.5 transition-all border-2 border-gray-500 bg-white hover:bg-blue-50 shadow-[2px_2px_0px_0px_rgba(107,114,128,1)] hover:shadow-[2.5px_2.5px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px]"
+          className="w-full text-xs font-black text-blue-600 rounded-lg py-1.5 transition-all border-2 border-gray-500 bg-white hover:bg-blue-50 shadow-[2px_2px_0px_0px_rgba(107,114,128,1)] hover:shadow-[2.5px_2.5px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px]"
         >
           Today
         </button>
@@ -235,7 +235,7 @@ export default function CalendarInterface({
           </div>
         ) : events.length === 0 ? (
           <div className="text-center py-6">
-            <p className="text-[10px] text-gray-400 font-medium">No events</p>
+            <p className="text-xs text-gray-400 font-medium">No events</p>
           </div>
         ) : (
           <div className="space-y-1.5">
@@ -244,11 +244,11 @@ export default function CalendarInterface({
                 key={event.id}
                 className="p-2 bg-white border-2 border-gray-500 rounded-lg shadow-[2px_2px_0px_0px_rgba(107,114,128,1)] hover:shadow-[2.5px_2.5px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px] transition-all"
               >
-                <div className="text-[10px] font-bold text-gray-800 mb-0.5 line-clamp-1">
+                <div className="text-xs font-bold text-gray-800 mb-0.5 line-clamp-1">
                   {event.summary}
                 </div>
                   {event.start?.dateTime && (
-                    <div className="text-[9px] text-[#3b82f6] font-semibold">
+                    <div className="text-[11px] text-[#3b82f6] font-semibold">
                       {formatTime(event.start.dateTime)}
                     </div>
                   )}

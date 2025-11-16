@@ -91,11 +91,13 @@ export function PersonalizedChatInterface({
     }
   }
 
-  const quickPrompts = [
-    "What's on my schedule?",
-    "Help me plan my day",
-    "Quick meal ideas?",
-    "Productivity tips"
+  const quickPrompts: string[] = [
+    "Summarize my day",
+    "Draft a message",
+    "Create a to‑do list",
+    "Brainstorm ideas",
+    "Explain a concept",
+    "Set a reminder idea"
   ]
 
   return (
@@ -194,11 +196,11 @@ export function PersonalizedChatInterface({
       </div>
 
       {/* Input Area - Neo-Brutalism */}
-      <div className="border-t-4 border-b-4 border-gray-500 bg-white px-4 py-3">
+      <div className="border-t-4 border-b-4 border-gray-500 bg-white px-4 py-2">
         <div className="w-full">
-          {/* Quick prompts - Enhanced */}
-          {messages.length === 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
+          {/* Quick prompts - removed by request */}
+          {messages.length === 0 && quickPrompts.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
               {quickPrompts.map((prompt, index) => (
                 <button
                   key={index}
@@ -223,13 +225,13 @@ export function PersonalizedChatInterface({
                 }
               }}
                 placeholder="Message Amigo..."
-              className="flex-1 px-4 py-3 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none resize-none transition-all border-3 border-gray-500 bg-white font-medium"
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-900 placeholder-gray-500 focus:outline-none resize-none transition-all border-3 border-gray-500 bg-white font-medium"
               rows={1}
               disabled={isLoading}
             />
               <button
                 type="submit"
-                className="p-3.5 rounded-xl text-white transition-all disabled:opacity-50 border-3 border-gray-500 bg-blue-500 hover:bg-blue-600 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)] hover:shadow-[6px_6px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(107,114,128,1)]"
+                className="p-3 rounded-xl text-white transition-all disabled:opacity-50 border-3 border-gray-500 bg-blue-500 hover:bg-blue-600 shadow-[4px_4px_0px_0px_rgba(107,114,128,1)] hover:shadow-[6px_6px_0px_0px_rgba(107,114,128,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_rgba(107,114,128,1)]"
                 disabled={!inputValue.trim() || isLoading}
               >
               {isLoading ? (
